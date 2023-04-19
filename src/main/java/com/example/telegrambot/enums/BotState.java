@@ -1,0 +1,10 @@
+package com.example.telegrambot.enums;
+
+public enum BotState {
+    REGISTERED_USER,
+    ASK_QUERY_MIDJOURNEY,
+    WAITING_REQUEST_MIDJOURNEY,
+    GOT_REQUEST_MIDJOURNEY,
+    WAITING_ART,
+    GOT_RESPONSE_FROM_MIDJOURNEY
+}
