@@ -1,5 +1,6 @@
 package com.example.telegrambot.entity;
 
+import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -20,13 +21,21 @@ public class User {
     private String name;
 
     @JsonProperty("description")
+    @Column(name = "description")
     private String description;
 
     @JsonProperty("status")
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private BotState status;
 
+    @JsonProperty("contestAnswer")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "contest_answer")
+    private AnswerEnum contestAnswer;
+
     @JsonProperty("user_id")
+    @Column(name = "user_id")
     private int user_id;
 
     @Transient

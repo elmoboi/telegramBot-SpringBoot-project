@@ -23,30 +23,42 @@ public class BotStateContext {
     public SendMessage processInputMessage(BotState currentState, Message message) {
         try {
             InputMessageHandler currentMessageHandler = findMessageHandler(currentState);
-            return currentMessageHandler.handle(message);
+            log.info("messageHandlers currentMessageHandler - " + currentMessageHandler);
+            if(currentMessageHandler != null) {
+                return currentMessageHandler.handle(message);
+            }
         } catch (NullPointerException e) {
-            new SendMessage(String.valueOf(message.getChatId()),"К сожалению, бот не умеет общаться без " +
+            new SendMessage(String.valueOf(message.getChatId()),"1 К сожалению, бот не умеет общаться без " +
                     "активироанного чата с ChatGTP(для того, чтобы активировать этот чат и поговорить с ИИ, нажмите на соответствующую кнопку в меню)");
             e.printStackTrace();
         }
-        return new SendMessage(String.valueOf(message.getChatId()),"К сожалению, бот не умеет общаться без " +
-                "активироанного чата с ChatGTP(для того, чтобы активировать этот чат, нажмите на соответствующую кнопку в меню)");
+        return null;
     }
 
     private InputMessageHandler findMessageHandler(BotState currentState) {
         if(isFillingMidjourneyState(currentState)) {
-            return messageHandlers.get(BotState.WAITING_REQUEST_MIDJOURNEY);
+            if(currentState.equals(BotState.WAITING_REQUEST_MIDJOURNEY)) {
+                return messageHandlers.get(BotState.WAITING_REQUEST_MIDJOURNEY);
+            } else if(currentState.equals(BotState.GOT_ART_FROM_MIDJOURNEY)) {
+                return messageHandlers.get(BotState.WAITING_ART);
+            }
         }
+
         return messageHandlers.get(currentState);
     }
 
     private boolean isFillingMidjourneyState(BotState currentState) {
         switch (currentState) {
             case REGISTERED_USER:
-            case ASK_QUERY_MIDJOURNEY:
             case WAITING_REQUEST_MIDJOURNEY:
-            case GOT_REQUEST_MIDJOURNEY:
-            case GOT_RESPONSE_FROM_MIDJOURNEY:
+            case ASK_QUERY_MIDJOURNEY:
+            case WAITING_ART:
+            case GOT_ART_FROM_MIDJOURNEY:
+            case VALIDATE_ART_FROM_MIDJOURNEY:
+            case PICK_ONE_FAVORITE:
+            case PICKED_ONE_FAVORITE:
+            case WAITING_TO_NOMINATE:
+            case NOMINATED_ART:
                 return true;
             default:
                 return false;

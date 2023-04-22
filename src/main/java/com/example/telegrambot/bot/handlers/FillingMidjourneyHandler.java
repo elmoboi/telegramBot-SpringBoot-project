@@ -55,13 +55,15 @@ public class FillingMidjourneyHandler implements InputMessageHandler {
                 userService.setBotState(BotState.WAITING_ART,userId);
             }
         }
-        if(botState.equals(BotState.WAITING_ART)) {
-
-        }
-        if(botState.equals(BotState.GOT_RESPONSE_FROM_MIDJOURNEY)) {
-
-            replyToUser = new SendMessage(String.valueOf(chatId),"Вот, что удалось сгенерировать боту Midjourney: \n");
-        }
+//        if(botState.equals(BotState.VALIDATE_ART_FROM_MIDJOURNEY)) {
+//            replyToUser = new SendMessage(String.valueOf(chatId),"Спасибо, вы уверены что хотите дальше работать с этим артом?");
+//        }
+//        if(botState.equals(BotState.WAITING_ART)) {
+//            replyToUser = new SendMessage(String.valueOf(chatId),"Выберете самую лучшую из 4х артов");
+//        }
+//        if(botState.equals(BotState.GOT_RESPONSE_FROM_MIDJOURNEY)) {
+//            replyToUser = new SendMessage(String.valueOf(chatId),"Вот, что удалось сгенерировать боту Midjourney: \n");
+//        }
 
         return replyToUser;
     }

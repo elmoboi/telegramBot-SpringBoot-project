@@ -1,12 +1,11 @@
 package com.example.telegrambot.bot;
 
 import com.example.telegrambot.bot.menu.BotMenu;
+import com.example.telegrambot.bot.menu.ContestMenu;
 import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.BotState;
-//import com.example.telegrambot.service.Producer;
 import com.example.telegrambot.service.event.EventService;
 import com.example.telegrambot.service.user.UserService;
-import com.pengrad.telegrambot.request.GetMe;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -63,10 +62,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
 
-        if(update.hasMessage() && update.getMessage().getFrom().getIsBot()) {
-            log.info("BOT MESSAGE");
-        }
-
         if(update.hasMessage()) {
             requestMessage = update.getMessage();
             response.setChatId(update.getMessage().getChatId());
@@ -78,6 +73,18 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         if (update.hasMessage() && requestMessage.hasText())
             log.info("Working onUpdateReceived, request text[{}]", update.getMessage().getText());
+
+        if(update.hasMessage()) {
+            Message message = update.getMessage();
+            if (message.getReplyToMessage() != null && message.getReplyToMessage().getFrom().getUserName().equals(botUsername)) {
+                log.info("Replayed to bot message User: {}, userName: {}", user.getName(), user.getName());
+                if(userService.getBotState(user.getUser_id()).equals(BotState.WAITING_ART)) {
+                    userService.setBotState(BotState.GOT_ART_FROM_MIDJOURNEY, Math.toIntExact(message.getFrom().getId()));
+                    execute(telegramFacade.handleUpdate(update));
+                    execute(ContestMenu.sendInlineKeyBoardMessage(update.getMessage().getChatId()));
+                }
+            }
+        }
 
         if (requestMessage.getText().equals("/start"))
             defaultMsg(response, """

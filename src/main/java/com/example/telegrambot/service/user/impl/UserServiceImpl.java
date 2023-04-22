@@ -1,5 +1,6 @@
 package com.example.telegrambot.service.user.impl;
 
+import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.entity.User;
 import com.example.telegrambot.exceptions.ResourceNotFoundException;
@@ -72,5 +73,10 @@ public class UserServiceImpl implements UserService {
     public List<SerialBlob> getAllImages(int id) {
         //TODO: прописать репу доставания всех фоток из базы данных
         return null;
+    }
+
+    @Override
+    public void setContestAnswer(AnswerEnum answer, int id) {
+        userRepository.setUserContestAnswer(answer,id);
     }
 }

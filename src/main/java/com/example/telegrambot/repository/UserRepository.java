@@ -1,5 +1,6 @@
 package com.example.telegrambot.repository;
 
+import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,6 +28,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Transactional
     @Query("update User u set u.status = ?1 where u.user_id = ?2")
     void setBotStatusToUserById(BotState botState ,long id);
+
+    @Modifying
+    @Transactional
+    @Query("update User u set u.contestAnswer = ?1 where u.user_id = ?2")
+    void setUserContestAnswer(AnswerEnum answer , long id);
 
     @Modifying
     @Transactional
