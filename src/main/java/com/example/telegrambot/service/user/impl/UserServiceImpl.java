@@ -71,7 +71,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<SerialBlob> getAllImages(int id) {
-        //TODO: прописать репу доставания всех фоток из базы данных
         return null;
     }
 
