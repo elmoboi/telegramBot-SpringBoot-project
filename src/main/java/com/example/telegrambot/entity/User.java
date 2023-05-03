@@ -4,11 +4,15 @@ import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "user_table", schema = "public")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @JsonProperty("id")
@@ -29,31 +33,23 @@ public class User {
     @Column(name = "status")
     private BotState status;
 
-    @JsonProperty("contestAnswer")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "contest_answer")
-    private AnswerEnum contestAnswer;
-
     @JsonProperty("user_id")
     @Column(name = "user_id")
-    private int user_id;
+    private long user_id;
 
-    @Transient
-    private String startWord = "";
-
-    public User() {
-    }
-
-    public User(int id, String name, String description, BotState status, int user_id) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.status = status;
-        this.user_id = user_id;
-    }
+    @JsonProperty("contestAnswer")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "is_already_sent")
+    private AnswerEnum isAlreadySent;
 
     @Override
     public String toString() {
-        return  description;
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                ", user_id=" + user_id +
+                ", isAlreadySent=" + isAlreadySent +
+                '}';
     }
 }

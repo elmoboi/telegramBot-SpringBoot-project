@@ -1,13 +1,15 @@
 package com.example.telegrambot.service.user.impl;
 
+import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
-import com.example.telegrambot.entity.User;
 import com.example.telegrambot.exceptions.ResourceNotFoundException;
 import com.example.telegrambot.repository.UserRepository;
 import com.example.telegrambot.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.sql.rowset.serial.SerialBlob;
@@ -29,53 +31,53 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getById(int id) throws ResourceNotFoundException {
-        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
-    }
-
-    @Override
-    public List<String> getMessageList(User user) {
-        String userName = user.getName();
-        return userRepository.getMessagesByName(userName);
-    }
-
-    @Override
     public void incert(User user) {
         userRepository.save(user);
     }
 
     @Override
-    public Boolean isUserExist(int id) {
+    public Boolean isUserExist(long id) {
         return userRepository.findUserByUserId(id);
     }
 
     @Override
-    public void delete(User user) {
-        userRepository.delete(user);
-    }
-
-    @Override
-    public BotState getBotState(int id) {
+    public BotState getBotState(long id) {
         return userRepository.findUserStatusById(id);
     }
 
     @Override
-    public void setBotState(BotState botState ,int id) {
+    public void setBotState(BotState botState ,long id) {
         userRepository.setBotStatusToUserById(botState,id);
     }
 
     @Override
-    public void setMessageUser(String message, int id) {
+    public void setMessageUser(String message, long id) {
         userRepository.updateUserMessage(message,id);
     }
 
     @Override
-    public List<SerialBlob> getAllImages(int id) {
-        return null;
+    public List<User> getUsersWaitingStatus(BotState botState) {
+        return userRepository.getUserByStatus(botState);
     }
 
     @Override
-    public void setContestAnswer(AnswerEnum answer, int id) {
-        userRepository.setUserContestAnswer(answer,id);
+    public Integer getAllCount() {
+        int count = userRepository.findAll().size();
+        return count;
+    }
+
+    @Override
+    public void setSentStatus(AnswerEnum answerEnum, long id) {
+        userRepository.setSentStatusToUserById(answerEnum,id);
+    }
+
+    @Override
+    public AnswerEnum getSentStatus(long id) {
+        return userRepository.findUserSentStatusById(id);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 }

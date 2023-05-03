@@ -1,18 +1,21 @@
 package com.example.telegrambot.bot;
 
 import com.example.telegrambot.bot.menu.BotMenu;
-import com.example.telegrambot.bot.menu.ContestMenu;
 import com.example.telegrambot.entity.User;
+import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.service.event.EventService;
 import com.example.telegrambot.service.user.UserService;
+import com.example.telegrambot.utils.Emojis;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -36,8 +39,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private final TelegramFacade telegramFacade;
     private final BotMenu botMenu;
-
-    private final long botId = 6006881730L;
 
     public TelegramBot(
             TelegramBotsApi telegramBotsApi,
@@ -68,66 +69,41 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
 
         var user = new User(
-                0, requestMessage.getChat().getUserName(),
-                requestMessage.getText(),BotState.REGISTERED_USER,Math.toIntExact(requestMessage.getFrom().getId()));
+                0,  requestMessage.getChat().getUserName(),
+                requestMessage.getText(),BotState.REGISTERED_USER,requestMessage.getFrom().getId(), AnswerEnum.NO);
 
         if (update.hasMessage() && requestMessage.hasText())
             log.info("Working onUpdateReceived, request text[{}]", update.getMessage().getText());
 
-        if(update.hasMessage()) {
-            Message message = update.getMessage();
-            if (message.getReplyToMessage() != null && message.getReplyToMessage().getFrom().getUserName().equals(botUsername)) {
-                log.info("Replayed to bot message User: {}, userName: {}", user.getName(), user.getName());
-                if(userService.getBotState(user.getUser_id()).equals(BotState.WAITING_ART)) {
-                    userService.setBotState(BotState.GOT_ART_FROM_MIDJOURNEY, Math.toIntExact(message.getFrom().getId()));
-                    execute(telegramFacade.handleUpdate(update));
-                    execute(ContestMenu.sendInlineKeyBoardMessage(update.getMessage().getChatId()));
-                }
-            }
-        }
-
-        if (requestMessage.getText().equals("/start"))
-            defaultMsg(response, """
-                    Приветствуем вас на нашем диджитальном мероприятии, я буду вашим путеводителем!\s
-                    Мною можно управлять при помощи меню, вызвать его можно ключевыми словами: (Menu/menu/Меню/меню)
-                    """);
-
-
-        else if(requestMessage.getText().equals("Menu")
+        if (requestMessage.getText().equals("/start")) {
+            if(!userService.isUserExist(user.getUser_id())) {
+                userService.incert(user);
+            } defaultMsg(response, "Приветствуем вас на нашем диджитальном дне! \n" + Emojis.ROBOT +
+                    " Я робот, буду вашим путеводителем, у меня можно узнать: \n" +
+                    "\n <b>- Программу мероприятия. </b>" +
+                    "\n <b>- Что идет сейчас? </b>" +
+                    "\n <b>- Что будет следующем? </b>" +
+                    "\n <b>- Сгенерировать арт у Midjourney. </b>" +
+                    "\n <b>- Пообщаться с ChatGPT. </b>" +
+                    "\n <b>- Узнать как зарегистрировать chatGPT и Midjourney. </b>\n\n" +
+                    "Мной можно управлять при помощи меню, вызывать его можно ключевыми словами: <i>(Menu/menu/Меню/меню)</i>");
+        } else if(requestMessage.getText().equals("Menu")
                 || requestMessage.getText().equals("menu")
                 || requestMessage.getText().equals("меню")
                 || requestMessage.getText().equals("Меню")) {
-            if(update.hasMessage()) {
-                if (update.getMessage().hasText()) {
-                    try {
-                        execute(BotMenu.sendInlineKeyBoardMessage(update.getMessage().getChatId()));
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }else if(update.hasCallbackQuery()){
+            if(update.hasMessage() && update.getMessage().hasText()) {
                 try {
-                        if(userService.isUserExist(user.getUser_id())) {
-                            log.info(user.getName() + " user already inserted");
-                            execute(telegramFacade.handleUpdate(update));
-                        } else {
-                            log.info(user.getName() + " was insert");
-                            userService.incert(user);
-                            execute(telegramFacade.handleUpdate(update));
-                        }
+                    execute(BotMenu.sendInlineKeyBoardMessage(user.getUser_id()));
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if(update.hasCallbackQuery()){
+                try {
+                    execute(telegramFacade.handleUpdate(update));
                 } catch (TelegramApiException tae) {
                     tae.printStackTrace();
                 }
             }
-        }
-
-        if (requestMessage.getText().startsWith("/")) {
-            user.setStartWord("команда: ");
-        } else if (requestMessage.getText().equals("Menu")
-                || requestMessage.getText().equals("Меню")
-                || requestMessage.getText().equals("menu")
-                || requestMessage.getText().equals("меню")) {
-            user.setStartWord("меню: ");
         } else {
             execute(telegramFacade.handleUpdate(update));
         }
@@ -135,6 +111,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void defaultMsg(SendMessage response, String msg) throws TelegramApiException {
         response.setText(msg);
+        response.setParseMode(ParseMode.HTML);
         execute(response);
     }
 

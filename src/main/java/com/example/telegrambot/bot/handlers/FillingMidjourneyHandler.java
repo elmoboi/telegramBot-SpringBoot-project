@@ -1,9 +1,13 @@
 package com.example.telegrambot.bot.handlers;
 
+import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.service.user.UserService;
+import com.example.telegrambot.utils.Emojis;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -22,8 +26,8 @@ public class FillingMidjourneyHandler implements InputMessageHandler {
 
     @Override
     public SendMessage handle(Message message) {
-        if(userService.getBotState(Math.toIntExact(message.getFrom().getId())).equals(BotState.WAITING_REQUEST_MIDJOURNEY)) {
-            userService.setBotState(BotState.ASK_QUERY_MIDJOURNEY, Math.toIntExact(message.getFrom().getId()));
+        if(userService.getBotState(message.getFrom().getId()).equals(BotState.WAITING_REQUEST_MIDJOURNEY)) {
+            userService.setBotState(BotState.ASK_QUERY_MIDJOURNEY, message.getFrom().getId());
         }
 
         return processUserMidjourneyQueryInput(message);
@@ -36,7 +40,7 @@ public class FillingMidjourneyHandler implements InputMessageHandler {
 
     private SendMessage processUserMidjourneyQueryInput(Message message) {
         String userAnswer = message.getText();
-        int userId = Math.toIntExact(message.getFrom().getId());
+        long userId = message.getFrom().getId();
         long chatId = message.getChatId();
 
         BotState botState = userService.getBotState(userId);
@@ -47,23 +51,18 @@ public class FillingMidjourneyHandler implements InputMessageHandler {
             String regex = "[а-яёА-ЯЁ]+";
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(userAnswer);
-            if(matcher.find()) {
-                replyToUser = new SendMessage(String.valueOf(chatId),"Неверный запрос, проверьте нет ли в вашем запросе кирилицы и повторите попытку");
+            if(matcher.find() || userAnswer.startsWith("/imagine prompt:") || userAnswer.startsWith("/") || userAnswer.contains("/")) {
+                replyToUser = new SendMessage(String.valueOf(chatId), Emojis.ROBOT + "Неверный запрос, проверьте нет ли в вашем запросе кирилицы или: " +
+                        "\n<code>\"/imagine prompt:\"</code>, <code>\"/\"</code>, и повторите попытку!");
+                replyToUser.setParseMode(ParseMode.HTML);
+                userService.setBotState(BotState.WAITING_REQUEST_MIDJOURNEY,userId);
             } else {
-                replyToUser = new SendMessage(String.valueOf(chatId),"Спасибо, ожидайте Ваш арт, он в самое ближайшее время появится тут!");
+                replyToUser = new SendMessage(String.valueOf(chatId),Emojis.ROBOT + "Спасибо, ожидайте Ваш арт, он в самое ближайшее время появится тут!" + Emojis.CLOCK);
                 userService.setMessageUser(userAnswer,userId);
                 userService.setBotState(BotState.WAITING_ART,userId);
+                userService.setSentStatus(AnswerEnum.NO, userId);
             }
         }
-//        if(botState.equals(BotState.VALIDATE_ART_FROM_MIDJOURNEY)) {
-//            replyToUser = new SendMessage(String.valueOf(chatId),"Спасибо, вы уверены что хотите дальше работать с этим артом?");
-//        }
-//        if(botState.equals(BotState.WAITING_ART)) {
-//            replyToUser = new SendMessage(String.valueOf(chatId),"Выберете самую лучшую из 4х артов");
-//        }
-//        if(botState.equals(BotState.GOT_RESPONSE_FROM_MIDJOURNEY)) {
-//            replyToUser = new SendMessage(String.valueOf(chatId),"Вот, что удалось сгенерировать боту Midjourney: \n");
-//        }
 
         return replyToUser;
     }
