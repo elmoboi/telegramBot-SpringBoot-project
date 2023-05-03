@@ -1,0 +1,119 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <link th:href="@{style.css}" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <script th:inline="javascript">
+        function sendArt(userId) {
+            console.log(userId)
+            var artHref = $('#artHrefInput').val();
+            var tgToken = $('#tgTokenInput').val();
+
+            $.ajax({
+                type: "GET",
+                url: "/sendArt/" + userId,
+                data: {
+                    artHref: artHref,
+                    tgToken: tgToken,
+                },
+                success: function (response) {
+                    var jsonResponse = JSON.parse(response)
+                    if(jsonResponse.ok) {
+                        $("#responseBody").html("SUCCESS SENDING").addClass("success");
+                    } else {
+                        $("#responseBody").html("ERROR SENDING" + response).addClass("error");
+                    }
+                },
+                fail: function (jqXHR, textStatus, errorThrown) {
+                    console.log("Request failed: " + textStatus + ", " + errorThrown);
+                    $("#responseBody").html("ERROR SENDING" + errorThrown).addClass("error");
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            $("#refresh-btn").click(function() {
+                $.ajax({
+                    url: "/data",
+                    type: "GET",
+                    success: function(data) {
+                        var tableBody = $("#data-table tbody");
+                        tableBody.empty();
+                        $.each(data, function(index, value) {
+                            var row = $("<tr/>");
+                            row.append($("<td/>").text(value.user_id));
+                            row.append($("<td/>").text(value.description));
+                            row.append($("<td/>").text(value.status));
+                            row.append($("<td/>").text(value.contestAnswer));
+                            row.append($("<td/>").html('<input type="submit" value="Send Art" data-user-id="' + value.user_id + '" onclick="sendArt(this.dataset.userId)"></input>'));
+                            tableBody.append(row);
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+</head>
+<body>
+<div id="responseBody"></div>
+<hr>
+<div style="text-align: center;">
+    <button id="refresh-btn">Refresh Data</button>
+    <label for="tgTokenInput">Telegram token</label>
+    <input type="text" id="tgTokenInput" placeholder="Введите токен">
+</div>
+<div style="margin: 10px;"></div>
+<div>
+    <table id="data-table">
+        <thead>
+        <tr>
+            <th scope="col">Telegram chat id</th>
+            <th scope="col">Midjourney query</th>
+            <th scope="col">Status</th>
+            <th scope="col">Has already been sent</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody id="data-table tbody">
+        <tr th:each="user : ${user}">
+            <td th:text="${user.user_id}"></td>
+            <td th:text="${user.description}"></td>
+            <td th:text="${user.status}"></td>
+            <td th:text="${user.isAlreadySent}"></td>
+            <td>
+                <input type="submit" value="Send Art" th:data-user-id="${user.user_id}" onclick="sendArt(this.dataset.userId)"></input>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="margin: 15px;"></div>
+    <label for="artHrefInput">Link for art image:</label>
+    <input type="text" id="artHrefInput" placeholder="Введите значение">
+    <div style="margin: 15px;"></div>
+    <div id="image-container"></div>
+
+    <script>
+        const imageUrlInput = document.querySelector('#artHrefInput');
+        const imageContainer = document.querySelector('#image-container');
+
+        imageUrlInput.addEventListener('input', () => {
+            const imageUrl = imageUrlInput.value;
+            if (imageUrl) {
+                imageContainer.innerHTML = `<img src="${imageUrl}" alt="Картинка" style="width:20%; display:block; margin:0 auto;">`;
+            } else {
+                imageContainer.innerHTML = '';
+            }
+        });
+    </script>
+
+    <div style="margin: 10px;"></div>
+    <hr>
+</div>
+</body>
+</html>
