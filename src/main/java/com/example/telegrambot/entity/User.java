@@ -2,6 +2,7 @@ package com.example.telegrambot.entity;
 
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
+import com.example.telegrambot.enums.GptState;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,25 +20,18 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @JsonProperty("name")
     @Column(name = "user_name")
     private String name;
-
-    @JsonProperty("description")
     @Column(name = "description")
     private String description;
-
-    @JsonProperty("status")
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "MJstatus")
     private BotState status;
-
-    @JsonProperty("user_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "GPTstatus")
+    private GptState GPTstatus;
     @Column(name = "user_id")
     private long user_id;
-
-    @JsonProperty("contestAnswer")
     @Enumerated(EnumType.STRING)
     @Column(name = "is_already_sent")
     private AnswerEnum isAlreadySent;
@@ -47,7 +41,7 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", status=" + status +
+                ", MJstatus=" + status +
                 ", user_id=" + user_id +
                 ", isAlreadySent=" + isAlreadySent +
                 '}';

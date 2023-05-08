@@ -7,6 +7,5 @@ import java.util.List;
 public interface EventService {
     List<Event> getEvents();
     Event getNowEvent();
-
     List<Event> getNextEvents();
 }

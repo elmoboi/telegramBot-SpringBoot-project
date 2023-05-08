@@ -3,6 +3,7 @@ package com.example.telegrambot.bot;
 import com.example.telegrambot.bot.handlers.FillingMidjourneyHandler;
 import com.example.telegrambot.entity.Event;
 import com.example.telegrambot.enums.BotState;
+import com.example.telegrambot.enums.GptState;
 import com.example.telegrambot.service.event.EventService;
 import com.example.telegrambot.service.user.UserService;
 import com.example.telegrambot.utils.Emojis;
@@ -76,7 +77,7 @@ public class TelegramFacade {
         }
 
         userService.setBotState(botState,userId);
-        if(!botState.equals(BotState.WAITING_REQUEST_MIDJOURNEY)) {
+        if(!botState.equals(BotState.WAITING_REQUEST_MIDJOURNEY) || botState.equals(GptState.DISABLED)) {
             replyMessage = new SendMessage(String.valueOf(userId),Emojis.ROBOT + " Я не могу общаться без активированного чата с ChatGPT. " +
                     "Активируй чат в разделе меню и тогда мы сможем обсудить интересные вещи" + Emojis.WINK);
         } else {
@@ -110,11 +111,7 @@ public class TelegramFacade {
     private BotApiMethod<?> onMidjourney(CallbackQuery callbackQuery) {
         final long chatId = callbackQuery.getMessage().getChatId();
         final int userId = Math.toIntExact(callbackQuery.getFrom().getId());
-        if(userService.getBotState(userId) == null) {
-            return new SendMessage(String.valueOf(userId), Emojis.ROBOT +
-                    "Похоже меня перезагрузили" + Emojis.FEARFUL + "\nЛибо мы с Вами еще не знакомы" + Emojis.PENSIVE +
-                    "\nВ любом случае, активировать меня можно командой" + Emojis.RIGTH_FINGER + "/start");
-        } else if(userService.getBotState(userId).equals(BotState.WAITING_ART)) {
+        if(userService.getBotState(userId).equals(BotState.WAITING_ART)) {
             return new SendMessage(String.valueOf(chatId), Emojis.LOCK + " К сожалению, мульти-запрос недоступен, " +
                     "дождитесь пока Midjourney сгенерирует предыдущий запрос перед тем как запришвать новый.");
         }

@@ -4,23 +4,15 @@ import com.example.telegrambot.entity.Event;
 import com.example.telegrambot.repository.EventRepository;
 import com.example.telegrambot.service.event.EventService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.errors.ResourceNotFoundException;
-import org.glassfish.jaxb.core.v2.TODO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class EventServiceImpl implements EventService {
-    //TODO: переписать getNowEvent, отдает первое мероприятие, если время уже после даже второго
-
     @Autowired
     private EventRepository eventRepository;
 

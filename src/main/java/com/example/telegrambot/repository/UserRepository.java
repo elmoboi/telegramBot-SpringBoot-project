@@ -3,11 +3,10 @@ package com.example.telegrambot.repository;
 import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
-import org.springframework.data.domain.PageRequest;
+import com.example.telegrambot.enums.GptState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,16 +14,24 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository("userRepository")
-@EnableJpaRepositories
 public interface UserRepository extends JpaRepository<User, Integer>, PagingAndSortingRepository<User, Integer> {
     @Transactional
     @Query("select u.status from User u where u.user_id = ?1")
     BotState findUserStatusById(long id);
 
+    @Transactional
+    @Query("select u.GPTstatus from User u where u.user_id = ?1")
+    GptState findUserGptStatusById(long id);
+
     @Modifying
     @Transactional
     @Query("update User u set u.status = ?1 where u.user_id = ?2")
     void setBotStatusToUserById(BotState botState ,long id);
+
+    @Modifying
+    @Transactional
+    @Query("update User u set u.GPTstatus = ?1 where u.user_id = ?2")
+    void setGptStatusToUserById(GptState gptState , long id);
 
     @Modifying
     @Transactional

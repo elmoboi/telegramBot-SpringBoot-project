@@ -4,13 +4,13 @@ import com.example.telegrambot.bot.menu.BotMenu;
 import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
+import com.example.telegrambot.enums.GptState;
 import com.example.telegrambot.service.event.EventService;
 import com.example.telegrambot.service.user.UserService;
 import com.example.telegrambot.utils.Emojis;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -70,15 +70,14 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         var user = new User(
                 0,  requestMessage.getChat().getUserName(),
-                requestMessage.getText(),BotState.REGISTERED_USER,requestMessage.getFrom().getId(), AnswerEnum.NO);
-
-        if (update.hasMessage() && requestMessage.hasText())
-            log.info("Working onUpdateReceived, request text[{}]", update.getMessage().getText());
+                requestMessage.getText(),BotState.REGISTERED_USER, GptState.DISABLED,requestMessage.getFrom().getId(), AnswerEnum.NO);
 
         if (requestMessage.getText().equals("/start")) {
             if(!userService.isUserExist(user.getUser_id())) {
                 userService.incert(user);
-            } defaultMsg(response, "Приветствуем вас на нашем диджитальном дне! \n" + Emojis.ROBOT +
+                log.info("Register new user: {}, id: {}", user.getName(), user.getUser_id());
+            }
+            defaultMsg(response, "Приветствуем вас на нашем диджитальном дне! \n" + Emojis.ROBOT +
                     " Я робот, буду вашим путеводителем, у меня можно узнать: \n" +
                     "\n <b>- Программу мероприятия. </b>" +
                     "\n <b>- Что идет сейчас? </b>" +
@@ -87,10 +86,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                     "\n <b>- Пообщаться с ChatGPT. </b>" +
                     "\n <b>- Узнать как зарегистрировать chatGPT и Midjourney. </b>\n\n" +
                     "Мной можно управлять при помощи меню, вызывать его можно ключевыми словами: <i>(Menu/menu/Меню/меню)</i>");
-        } else if(requestMessage.getText().equals("Menu")
-                || requestMessage.getText().equals("menu")
-                || requestMessage.getText().equals("меню")
-                || requestMessage.getText().equals("Меню")) {
+        } else if(requestMessage.getText().equals("Menu") || requestMessage.getText().equals("menu")
+                || requestMessage.getText().equals("меню") || requestMessage.getText().equals("Меню")) {
             if(update.hasMessage() && update.getMessage().hasText()) {
                 try {
                     execute(BotMenu.sendInlineKeyBoardMessage(user.getUser_id()));

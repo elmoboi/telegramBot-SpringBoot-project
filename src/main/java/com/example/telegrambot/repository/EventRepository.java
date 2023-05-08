@@ -6,6 +6,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
 @Repository("eventRepository")
-@EnableJpaRepositories
 public interface EventRepository extends JpaRepository<Event, Integer> {
 }

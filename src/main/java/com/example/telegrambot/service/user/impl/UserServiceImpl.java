@@ -3,20 +3,15 @@ package com.example.telegrambot.service.user.impl;
 import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
-import com.example.telegrambot.exceptions.ResourceNotFoundException;
+import com.example.telegrambot.enums.GptState;
 import com.example.telegrambot.repository.UserRepository;
 import com.example.telegrambot.service.user.UserService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.sql.rowset.serial.SerialBlob;
 import java.util.List;
 
 @Service
-@Slf4j
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -46,8 +41,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public GptState getGptState(long id) {
+        return userRepository.findUserGptStatusById(id);
+    }
+
+    @Override
     public void setBotState(BotState botState ,long id) {
         userRepository.setBotStatusToUserById(botState,id);
+    }
+
+    @Override
+    public void setGptState(GptState gptState, long id) {
+        userRepository.setGptStatusToUserById(gptState, id);
     }
 
     @Override
@@ -74,10 +79,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public AnswerEnum getSentStatus(long id) {
         return userRepository.findUserSentStatusById(id);
-    }
-
-    @Override
-    public List<User> getAll() {
-        return userRepository.findAll();
     }
 }

@@ -4,8 +4,6 @@ import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.service.user.UserService;
 import com.example.telegrambot.utils.Emojis;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,7 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-@Slf4j
 public class FillingMidjourneyHandler implements InputMessageHandler {
 
     private final UserService userService;
