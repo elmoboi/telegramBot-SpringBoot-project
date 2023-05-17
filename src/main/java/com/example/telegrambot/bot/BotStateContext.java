@@ -1,7 +1,9 @@
 package com.example.telegrambot.bot;
 
+import com.example.telegrambot.bot.handlers.InputMessageGPTHandler;
 import com.example.telegrambot.bot.handlers.InputMessageHandler;
 import com.example.telegrambot.enums.BotState;
+import com.example.telegrambot.enums.GptState;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -34,8 +36,8 @@ public class BotStateContext {
     }
 
     private InputMessageHandler findMessageHandler(BotState currentState) {
-        if(isFillingMidjourneyState(currentState)) {
-            if(currentState.equals(BotState.WAITING_REQUEST_MIDJOURNEY)) {
+        if (isFillingMidjourneyState(currentState)) {
+            if (currentState.equals(BotState.WAITING_REQUEST_MIDJOURNEY)) {
                 return messageHandlers.get(BotState.WAITING_REQUEST_MIDJOURNEY);
             }
         }

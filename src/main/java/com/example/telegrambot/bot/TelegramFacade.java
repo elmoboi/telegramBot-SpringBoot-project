@@ -25,19 +25,23 @@ public class TelegramFacade {
 
     private final UserService userService;
     private final BotStateContext botStateContext;
+    private final GptStateContext gptStateContext;
     FillingMidjourneyHandler fillingMidjourneyHandler;
     private final EventService eventService;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("mm");
+    private final ChatGPTClient chatGPTClient;
 
-    public TelegramFacade(UserService userService, BotStateContext botStateContext, FillingMidjourneyHandler fillingMidjourneyHandler,
-                          EventService eventService) {
+    public TelegramFacade(UserService userService, BotStateContext botStateContext, GptStateContext gptStateContext, FillingMidjourneyHandler fillingMidjourneyHandler,
+                          EventService eventService, ChatGPTClient chatGPTClient) {
         this.userService = userService;
         this.botStateContext = botStateContext;
+        this.gptStateContext = gptStateContext;
         this.fillingMidjourneyHandler = fillingMidjourneyHandler;
         this.eventService = eventService;
+        this.chatGPTClient = chatGPTClient;
     }
 
-    public BotApiMethod<?> handleUpdate(Update update) {
+    public BotApiMethod<?> handleUpdate(Update update) throws Exception {
         log.info("method handleUpdate was started");
         SendMessage replyMessage = null;
         CallbackQuery callbackQuery = update.getCallbackQuery();
@@ -58,10 +62,11 @@ public class TelegramFacade {
         return replyMessage;
     }
 
-    private SendMessage handleInputMessage(Message message) {
+    private SendMessage handleInputMessage(Message message) throws Exception {
         String inputMsg = message.getText();
         long userId = message.getFrom().getId();
         BotState botState;
+        GptState gptState;
         SendMessage replyMessage;
 
         if(userService.getBotState(userId) == null) {
@@ -73,11 +78,14 @@ public class TelegramFacade {
         switch (inputMsg) {
             default:
                 botState = userService.getBotState(userId);
+                gptState = userService.getGptState(userId);
                 break;
         }
 
         userService.setBotState(botState,userId);
-        if(!botState.equals(BotState.WAITING_REQUEST_MIDJOURNEY) || botState.equals(GptState.DISABLED)) {
+        if(gptState.equals(GptState.ACTIVE) || gptState.equals(GptState.COMMUNICATING_WITH_GPT)) {
+            replyMessage = gptStateContext.processInputMessageToGPT(gptState,message);
+        } else if(!botState.equals(BotState.WAITING_REQUEST_MIDJOURNEY) && gptState.equals(GptState.DISABLED)) {
             replyMessage = new SendMessage(String.valueOf(userId),Emojis.ROBOT + " Я не могу общаться без активированного чата с ChatGPT. " +
                     "Активируй чат в разделе меню и тогда мы сможем обсудить интересные вещи" + Emojis.WINK);
         } else {
@@ -196,7 +204,12 @@ public class TelegramFacade {
 
     private BotApiMethod<?> onChatGpt(CallbackQuery callbackQuery) {
         final long chatId = callbackQuery.getMessage().getChatId();
-        String response = Emojis.ZZZ + "Данный функционал в разработке" + Emojis.ZZZ;
+        String response;
+        if(userService.getGptState(chatId).equals(GptState.DISABLED)) {
+            userService.setGptState(GptState.ACTIVE,chatId);
+            response = Emojis.ROBOT + "СhatGPT был активирован! Для того, чтобы остановить чат с OpenAI и пользоваться остальным функционалом Digital day bot, введите команду /stopGPT";
+        } else response = Emojis.ROBOT + "СhatGPT уже активирован! Продолжайте общение!" + Emojis.SMS;
+
         return new SendMessage(String.valueOf(chatId), response);
     }
 

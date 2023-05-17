@@ -86,6 +86,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                     "\n <b>- Пообщаться с ChatGPT. </b>" +
                     "\n <b>- Узнать как зарегистрировать chatGPT и Midjourney. </b>\n\n" +
                     "Мной можно управлять при помощи меню, вызывать его можно ключевыми словами: <i>(Menu/menu/Меню/меню)</i>");
+        } else if(requestMessage.getText().equals("/stopGPT")) {
+            userService.setGptState(GptState.DISABLED,requestMessage.getFrom().getId());
+            defaultMsg(response, Emojis.ROBOT + "ChatGPT был отключен!");
         } else if(requestMessage.getText().equals("Menu") || requestMessage.getText().equals("menu")
                 || requestMessage.getText().equals("меню") || requestMessage.getText().equals("Меню")) {
             if(update.hasMessage() && update.getMessage().hasText()) {
