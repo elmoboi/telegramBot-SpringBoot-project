@@ -94,7 +94,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             userService.setGptState(GptState.DISABLED,requestMessage.getFrom().getId());
             defaultMsg(response, Emojis.ROBOT + "ChatGPT был отключен!");
         } else if(requestMessage.getText().equals("/refreshGPT")) {
-            defaultMsg(response, Emojis.ROBOT + "ChatGPT был перегружен, продолжайте Ваше общение!");
+            defaultMsg(response, Emojis.ROBOT + "ChatGPT был перегружен, продолжайте Ваше общение! Контекст сохранен!");
             userService.setGptState(GptState.ACTIVE, requestMessage.getFrom().getId());
         } else if(requestMessage.getText().equals("Menu") || requestMessage.getText().equals("menu")
                 || requestMessage.getText().equals("меню") || requestMessage.getText().equals("Меню")) {
