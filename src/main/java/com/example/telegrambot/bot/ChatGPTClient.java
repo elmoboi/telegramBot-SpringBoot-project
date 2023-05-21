@@ -35,7 +35,7 @@ public class ChatGPTClient {
 
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("Authorization", "Bearer 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");
+        con.setRequestProperty("Authorization", "Bearer API");
 
         String model = "gpt-3.5-turbo";
 
