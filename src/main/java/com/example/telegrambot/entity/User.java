@@ -15,14 +15,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-
-    @JsonProperty("id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "user_name")
     private String name;
-    @Column(name = "description")
+    @Column(name = "description", length = 500)
     private String description;
     @Enumerated(EnumType.STRING)
     @Column(name = "MJstatus")
@@ -31,10 +29,14 @@ public class User {
     @Column(name = "GPTstatus")
     private GptState GPTstatus;
     @Column(name = "user_id")
-    private long user_id;
+    private long userId;
     @Enumerated(EnumType.STRING)
     @Column(name = "is_already_sent")
     private AnswerEnum isAlreadySent;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id")
+    private ConversationHistory conversationHistory;
+
 
     @Override
     public String toString() {
@@ -42,7 +44,7 @@ public class User {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", MJstatus=" + status +
-                ", user_id=" + user_id +
+                ", user_id=" + userId +
                 ", isAlreadySent=" + isAlreadySent +
                 '}';
     }

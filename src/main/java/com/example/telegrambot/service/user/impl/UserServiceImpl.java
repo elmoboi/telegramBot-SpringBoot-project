@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean isUserExist(long id) {
-        return userRepository.findUserByUserId(id);
+        return userRepository.isUserByUserIdExist(id);
     }
 
     @Override
@@ -79,5 +79,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public AnswerEnum getSentStatus(long id) {
         return userRepository.findUserSentStatusById(id);
+    }
+
+    @Override
+    public User findUserByUserId(long id) {
+        return userRepository.findUserByUserId(id);
     }
 }

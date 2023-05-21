@@ -16,31 +16,31 @@ import java.util.List;
 @Repository("userRepository")
 public interface UserRepository extends JpaRepository<User, Integer>, PagingAndSortingRepository<User, Integer> {
     @Transactional
-    @Query("select u.status from User u where u.user_id = ?1")
+    @Query("select u.status from User u where u.userId = ?1")
     BotState findUserStatusById(long id);
 
     @Transactional
-    @Query("select u.GPTstatus from User u where u.user_id = ?1")
+    @Query("select u.GPTstatus from User u where u.userId = ?1")
     GptState findUserGptStatusById(long id);
 
     @Modifying
     @Transactional
-    @Query("update User u set u.status = ?1 where u.user_id = ?2")
+    @Query("update User u set u.status = ?1 where u.userId = ?2")
     void setBotStatusToUserById(BotState botState ,long id);
 
     @Modifying
     @Transactional
-    @Query("update User u set u.GPTstatus = ?1 where u.user_id = ?2")
+    @Query("update User u set u.GPTstatus = ?1 where u.userId = ?2")
     void setGptStatusToUserById(GptState gptState , long id);
 
     @Modifying
     @Transactional
-    @Query("update User u set u.description = ?1 where u.user_id = ?2")
+    @Query("update User u set u.description = ?1 where u.userId = ?2")
     void updateUserMessage(String msg, long id);
 
     @Transactional
-    @Query("select count(u) = 1 from User u where u.user_id = ?1")
-    boolean findUserByUserId(long id);
+    @Query("select count(u) = 1 from User u where u.userId = ?1")
+    boolean isUserByUserIdExist(long id);
 
     @Transactional
     @Query("select u from User u where u.status = ?1")
@@ -48,10 +48,12 @@ public interface UserRepository extends JpaRepository<User, Integer>, PagingAndS
 
     @Modifying
     @Transactional
-    @Query("update User u set u.isAlreadySent = ?1 where u.user_id = ?2")
+    @Query("update User u set u.isAlreadySent = ?1 where u.userId = ?2")
     void setSentStatusToUserById(AnswerEnum answerEnum ,long id);
 
     @Transactional
-    @Query("select u.isAlreadySent from User u where u.user_id = ?1")
+    @Query("select u.isAlreadySent from User u where u.userId = ?1")
     AnswerEnum findUserSentStatusById(long id);
+
+    User findUserByUserId(long userId);
 }

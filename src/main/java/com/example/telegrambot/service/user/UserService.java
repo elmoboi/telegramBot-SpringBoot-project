@@ -19,4 +19,5 @@ public interface UserService {
     public Integer getAllCount(); //for paging
     void setSentStatus(AnswerEnum answerEnum, long id);
     AnswerEnum getSentStatus(long id);
+    User findUserByUserId(long id);
 }

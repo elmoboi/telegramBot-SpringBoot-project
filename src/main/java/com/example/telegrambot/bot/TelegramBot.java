@@ -1,6 +1,7 @@
 package com.example.telegrambot.bot;
 
 import com.example.telegrambot.bot.menu.BotMenu;
+import com.example.telegrambot.entity.ConversationHistory;
 import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
@@ -68,14 +69,17 @@ public class TelegramBot extends TelegramLongPollingBot {
             response.setChatId(update.getMessage().getChatId());
         }
 
+        var history = new ConversationHistory();
+        history.setUserHistoryConversation("");
+
         var user = new User(
                 0,  requestMessage.getChat().getUserName(),
-                requestMessage.getText(),BotState.REGISTERED_USER, GptState.DISABLED,requestMessage.getFrom().getId(), AnswerEnum.NO);
+                requestMessage.getText(),BotState.REGISTERED_USER, GptState.DISABLED,requestMessage.getFrom().getId(), AnswerEnum.NO, history);
 
         if (requestMessage.getText().equals("/start")) {
-            if(!userService.isUserExist(user.getUser_id())) {
+            if(!userService.isUserExist(user.getUserId())) {
                 userService.incert(user);
-                log.info("Register new user: {}, id: {}", user.getName(), user.getUser_id());
+                log.info("Register new user: {}, id: {}", user.getName(), user.getUserId());
             }
             defaultMsg(response, "Приветствуем вас на нашем диджитальном дне! \n" + Emojis.ROBOT +
                     " Я робот, буду вашим путеводителем, у меня можно узнать: \n" +
@@ -89,11 +93,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         } else if(requestMessage.getText().equals("/stopGPT")) {
             userService.setGptState(GptState.DISABLED,requestMessage.getFrom().getId());
             defaultMsg(response, Emojis.ROBOT + "ChatGPT был отключен!");
+        } else if(requestMessage.getText().equals("/refreshGPT")) {
+            defaultMsg(response, Emojis.ROBOT + "ChatGPT был перегружен, продолжайте Ваше общение!");
+            userService.setGptState(GptState.ACTIVE, requestMessage.getFrom().getId());
         } else if(requestMessage.getText().equals("Menu") || requestMessage.getText().equals("menu")
                 || requestMessage.getText().equals("меню") || requestMessage.getText().equals("Меню")) {
             if(update.hasMessage() && update.getMessage().hasText()) {
                 try {
-                    execute(BotMenu.sendInlineKeyBoardMessage(user.getUser_id()));
+                    execute(BotMenu.sendInlineKeyBoardMessage(user.getUserId()));
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }

@@ -1,20 +1,28 @@
 package com.example.telegrambot.bot.handlers;
 
 import com.example.telegrambot.bot.ChatGPTClient;
+import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.GptState;
+import com.example.telegrambot.service.conversation.ConversationHistoryService;
 import com.example.telegrambot.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Component
 @Slf4j
 public class FillingGPTHandler implements InputMessageGPTHandler {
     private final UserService userService;
+    private final ConversationHistoryService conversationHistoryService;
 
-    public FillingGPTHandler(UserService userService) {
+    public FillingGPTHandler(UserService userService, ConversationHistoryService conversationHistoryService) {
         this.userService = userService;
+        this.conversationHistoryService = conversationHistoryService;
     }
 
     @Override
@@ -34,16 +42,28 @@ public class FillingGPTHandler implements InputMessageGPTHandler {
     private SendMessage processUserMidjourneyQueryInput(Message message) throws Exception {
         String userAnswer = message.getText();
         long userId = message.getFrom().getId();
+        User user = userService.findUserByUserId(userId);
 
         GptState gptState = userService.getGptState(userId);
 
         SendMessage replyToUser = null;
 
         if(gptState.equals(GptState.COMMUNICATING_WITH_GPT)) {
-            //ChatGPTClient.checkResponse();
-            String gptResponse = ChatGPTClient.generateResponse(userAnswer);
-            log.info("Ответ от chatGPT: [{}]", gptResponse);
+            String previousQuestionsAndAnswers = conversationHistoryService.getConversationText(user.getId());
+            int curentQuestions = conversationHistoryService.getMaxContextQuestions(user.getId());
+            List<String> questionsAndAnswersList = new ArrayList<>();
+
+            if(previousQuestionsAndAnswers != null) {
+                String[] splitQuestionsAndAnswers = previousQuestionsAndAnswers.split("Q&A");
+                questionsAndAnswersList.addAll(Arrays.asList(splitQuestionsAndAnswers).subList(0, curentQuestions));
+            }
+
+            String gptResponse = ChatGPTClient.generateResponse(userAnswer, user, questionsAndAnswersList);
             replyToUser = new SendMessage(String.valueOf(userId),gptResponse);
+            String updatedHisoryText = userAnswer + ":" + gptResponse + " Q&A ";
+            String sourceHistoryText = conversationHistoryService.getConversationText(user.getId()) + updatedHisoryText;
+            conversationHistoryService.setConversationText(sourceHistoryText, user.getId());
+            conversationHistoryService.setMaxContextQuestions(user.getId());
             userService.setGptState(GptState.ACTIVE, userId);
         }
 

@@ -45,11 +45,11 @@
                         tableBody.empty();
                         $.each(data, function(index, value) {
                             var row = $("<tr/>");
-                            row.append($("<td/>").text(value.user_id));
+                            row.append($("<td/>").text(value.userId));
                             row.append($("<td/>").text(value.description));
                             row.append($("<td/>").text(value.status));
                             row.append($("<td/>").text(value.contestAnswer));
-                            row.append($("<td/>").html('<input type="submit" value="Send Art" data-user-id="' + value.user_id + '" onclick="sendArt(this.dataset.userId)"></input>'));
+                            row.append($("<td/>").html('<input type="submit" value="Send Art" data-user-id="' + value.userId + '" onclick="sendArt(this.dataset.userId)"></input>'));
                             tableBody.append(row);
                         });
                     }
@@ -81,12 +81,12 @@
         </thead>
         <tbody id="data-table tbody">
         <tr th:each="user : ${user}">
-            <td th:text="${user.user_id}"></td>
+            <td th:text="${user.userId}"></td>
             <td th:text="${user.description}"></td>
             <td th:text="${user.status}"></td>
             <td th:text="${user.isAlreadySent}"></td>
             <td>
-                <input type="submit" value="Send Art" th:data-user-id="${user.user_id}" onclick="sendArt(this.dataset.userId)"></input>
+                <input type="submit" value="Send Art" th:data-user-id="${user.userId}" onclick="sendArt(this.dataset.userId)"></input>
             </td>
         </tr>
         </tbody>

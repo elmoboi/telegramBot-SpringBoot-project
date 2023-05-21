@@ -207,7 +207,8 @@ public class TelegramFacade {
         String response;
         if(userService.getGptState(chatId).equals(GptState.DISABLED)) {
             userService.setGptState(GptState.ACTIVE,chatId);
-            response = Emojis.ROBOT + "СhatGPT был активирован! Для того, чтобы остановить чат с OpenAI и пользоваться остальным функционалом Digital day bot, введите команду /stopGPT";
+            response = Emojis.ROBOT + "СhatGPT был активирован! Для того, чтобы обновить chatGPT, например если он долго не отвечает, введите команду /refreshGPT, " +
+                    "чтобы остановить чат с OpenAI и пользоваться остальным функционалом Digital day bot, введите команду /stopGPT";
         } else response = Emojis.ROBOT + "СhatGPT уже активирован! Продолжайте общение!" + Emojis.SMS;
 
         return new SendMessage(String.valueOf(chatId), response);
