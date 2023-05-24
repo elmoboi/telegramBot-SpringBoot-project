@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUsersWaitingStatus(BotState botState) {
-        return userRepository.getUserByStatus(botState);
+        return userRepository.findUserByStatus(botState);
     }
 
     @Override

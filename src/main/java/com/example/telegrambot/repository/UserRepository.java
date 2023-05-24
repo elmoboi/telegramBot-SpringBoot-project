@@ -4,6 +4,7 @@ import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.enums.GptState;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,9 @@ import java.util.List;
 
 @Repository("userRepository")
 public interface UserRepository extends JpaRepository<User, Integer>, PagingAndSortingRepository<User, Integer> {
+    @EntityGraph(attributePaths = "conversationHistory")
+    List<User> findUserByStatus(BotState botState);
+
     @Transactional
     @Query("select u.status from User u where u.userId = ?1")
     BotState findUserStatusById(long id);
@@ -41,10 +45,6 @@ public interface UserRepository extends JpaRepository<User, Integer>, PagingAndS
     @Transactional
     @Query("select count(u) = 1 from User u where u.userId = ?1")
     boolean isUserByUserIdExist(long id);
-
-    @Transactional
-    @Query("select u from User u where u.status = ?1")
-    List<User> getUserByStatus(BotState botState);
 
     @Modifying
     @Transactional

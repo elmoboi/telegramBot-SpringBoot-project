@@ -3,7 +3,6 @@ package com.example.telegrambot.service.event.impl;
 import com.example.telegrambot.entity.Event;
 import com.example.telegrambot.repository.EventRepository;
 import com.example.telegrambot.service.event.EventService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

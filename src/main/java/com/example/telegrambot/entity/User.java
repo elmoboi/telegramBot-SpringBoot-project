@@ -3,11 +3,11 @@ package com.example.telegrambot.entity;
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.enums.GptState;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.Length;
 
 @Data
 @Entity
@@ -20,7 +20,7 @@ public class User {
     private int id;
     @Column(name = "user_name")
     private String name;
-    @Column(name = "description", length = 500)
+    @Column(name = "description", length = Length.LOB_DEFAULT)
     private String description;
     @Enumerated(EnumType.STRING)
     @Column(name = "MJstatus")
@@ -44,6 +44,7 @@ public class User {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", MJstatus=" + status +
+                ", Description=" + description +
                 ", user_id=" + userId +
                 ", isAlreadySent=" + isAlreadySent +
                 '}';

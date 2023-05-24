@@ -19,7 +19,6 @@ import java.util.concurrent.ExecutionException;
 
 @Controller
 @RequestMapping()
-@Slf4j
 public class WebController {
     //TODO: добавить сортировку на таболицу, чтобы наверху всегда были старые
     @Autowired

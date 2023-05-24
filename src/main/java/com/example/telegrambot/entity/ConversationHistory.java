@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.Length;
 
 @Data
 @Entity
@@ -14,10 +15,8 @@ public class ConversationHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "user_history_conversation", length = 1000)
+    @Column(name = "user_history_conversation", length = Length.LOB_DEFAULT)
     private String userHistoryConversation;
-    @OneToOne(mappedBy = "conversationHistory")
-    private User user;
     @Column(name = "max_context_questions")
     private int maxContextQuestions;
 }

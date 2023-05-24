@@ -6,8 +6,6 @@ import com.example.telegrambot.service.conversation.ConversationHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class ConversationHistoryServiceImpl implements ConversationHistoryService {
 
@@ -29,7 +27,7 @@ public class ConversationHistoryServiceImpl implements ConversationHistoryServic
     }
 
     @Override
-    public void setMaxContextQuestions(int id) {
+    public void updateQuestionsContextCount(int id) {
         conversationHistoryRepository.updateQuestionValue(id);
     }
 

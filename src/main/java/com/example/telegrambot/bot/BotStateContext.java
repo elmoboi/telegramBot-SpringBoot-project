@@ -1,9 +1,7 @@
 package com.example.telegrambot.bot;
 
-import com.example.telegrambot.bot.handlers.InputMessageGPTHandler;
 import com.example.telegrambot.bot.handlers.InputMessageHandler;
 import com.example.telegrambot.enums.BotState;
-import com.example.telegrambot.enums.GptState;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

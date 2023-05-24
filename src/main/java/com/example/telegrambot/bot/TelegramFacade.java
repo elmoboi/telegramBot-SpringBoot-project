@@ -102,12 +102,8 @@ public class TelegramFacade {
 
         if(callbackQuery.getData().equals("midjourney")) {
             return onMidjourney(callbackQuery);
-        } else if(callbackQuery.getData().equals("event")) {
-            return onEvent(callbackQuery);
         } else if(callbackQuery.getData().equals("program")) {
             return onProgram(callbackQuery);
-        } else if(callbackQuery.getData().equals("next event")) {
-            return onNextEvent(callbackQuery);
         } else if(callbackQuery.getData().equals("chatGPT")) {
             return onChatGpt(callbackQuery);
         } else if(callbackQuery.getData().equals("registerBots")) {
@@ -138,52 +134,52 @@ public class TelegramFacade {
         return sendMessage;
     }
 
-    private BotApiMethod<?> onEvent(CallbackQuery callbackQuery) {
-        final long chatId = callbackQuery.getMessage().getChatId();
-        StringBuilder stringBuilder = new StringBuilder();
-        String response;
-        Event nextEvent = eventService.getNextEvents().get(0);
-        Event nowEvent = eventService.getNowEvent();
-        String title = nowEvent.getTitle();
-        String description = nowEvent.getDescription();
+//    private BotApiMethod<?> onEvent(CallbackQuery callbackQuery) {
+//        final long chatId = callbackQuery.getMessage().getChatId();
+//        StringBuilder stringBuilder = new StringBuilder();
+//        String response;
+//        Event nextEvent = eventService.getNextEvents().get(0);
+//        Event nowEvent = eventService.getNowEvent();
+//        String title = nowEvent.getTitle();
+//        String description = nowEvent.getDescription();
+//
+//        if(title.isEmpty()) {
+//            title = Emojis.ZZZ + " Запланированных мероприятий сейчас нет.";
+//            return new SendMessage(String.valueOf(chatId),title);
+//        }
+//        response = stringBuilder.append("<b>Название: </b>")
+//                .append(title)
+//                .append("\n<b>Описание: </b>")
+//                .append(description)
+//                .append("\n<b>Закончится в: </b>")
+//                .append(nextEvent.getTime().getHour())
+//                .append(":")
+//                .append(nextEvent.getTime().format(dtf)).toString();
+//        SendMessage sendMessage = new SendMessage(String.valueOf(chatId), "<b>Сейчас идет: \n\n</b>" + response);
+//        sendMessage.setParseMode(ParseMode.HTML);
+//        return sendMessage;
+//    }
 
-        if(title.isEmpty()) {
-            title = Emojis.ZZZ + " Запланированных мероприятий сейчас нет.";
-            return new SendMessage(String.valueOf(chatId),title);
-        }
-        response = stringBuilder.append("<b>Название: </b>")
-                .append(title)
-                .append("\n<b>Описание: </b>")
-                .append(description)
-                .append("\n<b>Закончится в: </b>")
-                .append(nextEvent.getTime().getHour())
-                .append(":")
-                .append(nextEvent.getTime().format(dtf)).toString();
-        SendMessage sendMessage = new SendMessage(String.valueOf(chatId), "<b>Сейчас идет: \n\n</b>" + response);
-        sendMessage.setParseMode(ParseMode.HTML);
-        return sendMessage;
-    }
-
-    private BotApiMethod<?> onNextEvent(CallbackQuery callbackQuery) {
-        final long chatId = callbackQuery.getMessage().getChatId();
-        StringBuilder stringBuilder = new StringBuilder();
-        String response = "";
-        List<Event> eventList = eventService.getNextEvents();
-        if(eventList.isEmpty()) {
-            response = Emojis.ZZZ + " Сессий больше не наблюдается.";
-            return new SendMessage(String.valueOf(chatId),response);
-        }
-        for(Event event : eventList) {
-            stringBuilder.append("<b>Название: </b>").append(event.getTitle()).append("\n")
-                    .append("<b>Описание: </b>").append(event.getDescription()).append("\n")
-                    .append("<b>Время начала: </b>").append(event.getTime().getHour()).append(":").append(event.getTime().format(dtf)).append("\n")
-                    .append("\n");
-            response = stringBuilder.toString();
-        }
-        SendMessage sendMessage = new SendMessage(String.valueOf(chatId), "<b>Следующее по рассписанию: \n\n</b>" + response);
-        sendMessage.setParseMode(ParseMode.HTML);
-        return sendMessage;
-    }
+//    private BotApiMethod<?> onNextEvent(CallbackQuery callbackQuery) {
+//        final long chatId = callbackQuery.getMessage().getChatId();
+//        StringBuilder stringBuilder = new StringBuilder();
+//        String response = "";
+//        List<Event> eventList = eventService.getNextEvents();
+//        if(eventList.isEmpty()) {
+//            response = Emojis.ZZZ + " Сессий больше не наблюдается.";
+//            return new SendMessage(String.valueOf(chatId),response);
+//        }
+//        for(Event event : eventList) {
+//            stringBuilder.append("<b>Название: </b>").append(event.getTitle()).append("\n")
+//                    .append("<b>Описание: </b>").append(event.getDescription()).append("\n")
+//                    .append("<b>Время начала: </b>").append(event.getTime().getHour()).append(":").append(event.getTime().format(dtf)).append("\n")
+//                    .append("\n");
+//            response = stringBuilder.toString();
+//        }
+//        SendMessage sendMessage = new SendMessage(String.valueOf(chatId), "<b>Следующее по рассписанию: \n\n</b>" + response);
+//        sendMessage.setParseMode(ParseMode.HTML);
+//        return sendMessage;
+//    }
 
     private BotApiMethod<?> onProgram(CallbackQuery callbackQuery) {
         final long chatId = callbackQuery.getMessage().getChatId();
@@ -207,8 +203,8 @@ public class TelegramFacade {
         String response;
         if(userService.getGptState(chatId).equals(GptState.DISABLED)) {
             userService.setGptState(GptState.ACTIVE,chatId);
-            response = Emojis.ROBOT + "СhatGPT был активирован! Для того, чтобы обновить chatGPT, например если он долго не отвечает, введите команду /refreshGPT, " +
-                    "чтобы остановить чат с OpenAI и пользоваться остальным функционалом Digital day bot, введите команду /stopGPT";
+            response = Emojis.ROBOT + "СhatGPT был активирован! Для того, чтобы обновить chatGPT, например если он долго не отвечает, введите команду /refreshGPT.\n" +
+                    "Чтобы остановить чат с OpenAI и пользоваться остальным функционалом Digital day bot, введите команду /stopGPT";
         } else response = Emojis.ROBOT + "СhatGPT уже активирован! Продолжайте общение!" + Emojis.SMS;
 
         return new SendMessage(String.valueOf(chatId), response);

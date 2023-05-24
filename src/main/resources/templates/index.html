@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Admin Panel</title>
     <link th:href="@{style.css}" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
     <script th:inline="javascript">
@@ -48,8 +48,8 @@
                             row.append($("<td/>").text(value.userId));
                             row.append($("<td/>").text(value.description));
                             row.append($("<td/>").text(value.status));
-                            row.append($("<td/>").text(value.contestAnswer));
-                            row.append($("<td/>").html('<input type="submit" value="Send Art" data-user-id="' + value.userId + '" onclick="sendArt(this.dataset.userId)"></input>'));
+                            row.append($("<td/>").text(value.isAlreadySent));
+                            row.append($("<td/>").html('<input type="submit" value="Send Art" data-user-id="' + value.userId + '" onclick="sendArt(this.dataset.userId)">'));
                             tableBody.append(row);
                         });
                     }

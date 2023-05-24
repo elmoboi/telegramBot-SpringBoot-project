@@ -6,6 +6,7 @@ import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.enums.GptState;
+import com.example.telegrambot.service.conversation.ConversationHistoryService;
 import com.example.telegrambot.service.event.EventService;
 import com.example.telegrambot.service.user.UserService;
 import com.example.telegrambot.utils.Emojis;
@@ -30,6 +31,7 @@ import java.util.List;
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
     private final UserService userService;
+    private final ConversationHistoryService conversationHistoryService;
     private final EventService eventService;
     private Message requestMessage = new Message();
     private final SendMessage response = new SendMessage();
@@ -45,7 +47,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             TelegramBotsApi telegramBotsApi,
             @Value("${telegram-bot.name}") String botUsername,
             @Value("${telegram-bot.token}") String botToken,
-            UserService userService, EventService eventService, TelegramFacade telegramFacade, BotMenu botMenu) throws TelegramApiException {
+            UserService userService, ConversationHistoryService conversationHistoryService, EventService eventService, TelegramFacade telegramFacade, BotMenu botMenu) throws TelegramApiException {
+        this.conversationHistoryService = conversationHistoryService;
         this.eventService = eventService;
         this.userService = userService;
         this.botToken = botToken;
@@ -84,8 +87,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             defaultMsg(response, "Приветствуем вас на нашем диджитальном дне! \n" + Emojis.ROBOT +
                     " Я робот, буду вашим путеводителем, у меня можно узнать: \n" +
                     "\n <b>- Программу мероприятия. </b>" +
-                    "\n <b>- Что идет сейчас? </b>" +
-                    "\n <b>- Что будет следующем? </b>" +
+//                    "\n <b>- Что идет сейчас? </b>" +
+//                    "\n <b>- Что будет следующем? </b>" +
                     "\n <b>- Сгенерировать арт у Midjourney. </b>" +
                     "\n <b>- Пообщаться с ChatGPT. </b>" +
                     "\n <b>- Узнать как зарегистрировать chatGPT и Midjourney. </b>\n\n" +
@@ -93,9 +96,16 @@ public class TelegramBot extends TelegramLongPollingBot {
         } else if(requestMessage.getText().equals("/stopGPT")) {
             userService.setGptState(GptState.DISABLED,requestMessage.getFrom().getId());
             defaultMsg(response, Emojis.ROBOT + "ChatGPT был отключен!");
+            requestMessage.setText("menu");
+            try {
+                execute(BotMenu.sendInlineKeyBoardMessage(user.getUserId()));
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         } else if(requestMessage.getText().equals("/refreshGPT")) {
-            defaultMsg(response, Emojis.ROBOT + "ChatGPT был перегружен, продолжайте Ваше общение! Контекст сохранен!");
             userService.setGptState(GptState.ACTIVE, requestMessage.getFrom().getId());
+            defaultMsg(response, Emojis.ROBOT + "ChatGPT был перегружен, продолжайте Ваше общение! Контекст сохранен предыдущими успешными сообщениями!");
+            //TODO: сделать сброс всего контекста и кол-во сообщений
         } else if(requestMessage.getText().equals("Menu") || requestMessage.getText().equals("menu")
                 || requestMessage.getText().equals("меню") || requestMessage.getText().equals("Меню")) {
             if(update.hasMessage() && update.getMessage().hasText()) {

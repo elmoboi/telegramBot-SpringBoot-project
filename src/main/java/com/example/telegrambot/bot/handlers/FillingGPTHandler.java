@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-@Slf4j
 public class FillingGPTHandler implements InputMessageGPTHandler {
     private final UserService userService;
     private final ConversationHistoryService conversationHistoryService;
@@ -43,10 +42,10 @@ public class FillingGPTHandler implements InputMessageGPTHandler {
         String userAnswer = message.getText();
         long userId = message.getFrom().getId();
         User user = userService.findUserByUserId(userId);
-
         GptState gptState = userService.getGptState(userId);
-
         SendMessage replyToUser = null;
+
+        userAnswer = userAnswer.replaceAll("[^A-Za-zА-Яа-я0-9-\s]", "");
 
         if(gptState.equals(GptState.COMMUNICATING_WITH_GPT)) {
             String previousQuestionsAndAnswers = conversationHistoryService.getConversationText(user.getId());
@@ -60,10 +59,11 @@ public class FillingGPTHandler implements InputMessageGPTHandler {
 
             String gptResponse = ChatGPTClient.generateResponse(userAnswer, user, questionsAndAnswersList);
             replyToUser = new SendMessage(String.valueOf(userId),gptResponse);
-            String updatedHisoryText = userAnswer + ":" + gptResponse + " Q&A ";
+            gptResponse = gptResponse.replaceAll("[^A-Za-zА-Яа-я0-9-\s]", "");
+            String updatedHisoryText = userAnswer + ":::" + gptResponse + " Q&A ";
             String sourceHistoryText = conversationHistoryService.getConversationText(user.getId()) + updatedHisoryText;
             conversationHistoryService.setConversationText(sourceHistoryText, user.getId());
-            conversationHistoryService.setMaxContextQuestions(user.getId());
+            conversationHistoryService.updateQuestionsContextCount(user.getId());
             userService.setGptState(GptState.ACTIVE, userId);
         }
 

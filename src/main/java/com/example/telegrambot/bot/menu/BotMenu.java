@@ -12,27 +12,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Slf4j
 public class BotMenu {
     public static SendMessage sendInlineKeyBoardMessage(long chatId) throws TelegramApiException {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+        //InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+        //InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton6 = new InlineKeyboardButton();
 
         inlineKeyboardButton1.setText("Программа");
-        inlineKeyboardButton2.setText("Что идет сейчас?");
-        inlineKeyboardButton3.setText("Что будет дальше?");
+        //inlineKeyboardButton2.setText("Что идет сейчас?");
+        //inlineKeyboardButton3.setText("Что будет дальше?");
         inlineKeyboardButton4.setText("Сгенерировать арт у Midjourney " + Emojis.ART);
         inlineKeyboardButton5.setText("Начать чат с ChatGPT " + Emojis.SMS);
         inlineKeyboardButton6.setText("Как зарегистрировать Midjourney|ChatGPT?");
 
         inlineKeyboardButton1.setCallbackData("program");
-        inlineKeyboardButton2.setCallbackData("event");
-        inlineKeyboardButton3.setCallbackData("next event");
+        //inlineKeyboardButton2.setCallbackData("event");
+        //inlineKeyboardButton3.setCallbackData("next event");
         inlineKeyboardButton4.setCallbackData("midjourney");
         inlineKeyboardButton5.setCallbackData("chatGPT");
         inlineKeyboardButton6.setCallbackData("registerBots");
@@ -44,18 +43,18 @@ public class BotMenu {
         List<InlineKeyboardButton> keyboardButtonsRow5 = new ArrayList<>(); //Как зарегистрировать чатгпт и миджорни
 
         keyboardButtonsRow1.add(inlineKeyboardButton1);
-        keyboardButtonsRow2.add(inlineKeyboardButton2);
-        keyboardButtonsRow2.add(inlineKeyboardButton3);
-        keyboardButtonsRow3.add(inlineKeyboardButton4);
-        keyboardButtonsRow4.add(inlineKeyboardButton5);
-        keyboardButtonsRow5.add(inlineKeyboardButton6);
+        //keyboardButtonsRow2.add(inlineKeyboardButton2);
+        //keyboardButtonsRow2.add(inlineKeyboardButton3);
+        keyboardButtonsRow2.add(inlineKeyboardButton4);
+        keyboardButtonsRow3.add(inlineKeyboardButton5);
+        keyboardButtonsRow4.add(inlineKeyboardButton6);
 
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow1);
         rowList.add(keyboardButtonsRow2);
         rowList.add(keyboardButtonsRow3);
         rowList.add(keyboardButtonsRow4);
-        rowList.add(keyboardButtonsRow5);
+        //rowList.add(keyboardButtonsRow5);
 
         inlineKeyboardMarkup.setKeyboard(rowList);
         SendMessage sm = new SendMessage();
