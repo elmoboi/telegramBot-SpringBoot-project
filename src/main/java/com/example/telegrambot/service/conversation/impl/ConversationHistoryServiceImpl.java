@@ -3,14 +3,15 @@ package com.example.telegrambot.service.conversation.impl;
 import com.example.telegrambot.entity.ConversationHistory;
 import com.example.telegrambot.repository.ConversationHistoryRepository;
 import com.example.telegrambot.service.conversation.ConversationHistoryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ConversationHistoryServiceImpl implements ConversationHistoryService {
 
-    @Autowired
-    private ConversationHistoryRepository conversationHistoryRepository;
+    private final ConversationHistoryRepository conversationHistoryRepository;
 
     @Override
     public String getConversationText(int id) {

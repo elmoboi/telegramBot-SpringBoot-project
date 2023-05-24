@@ -9,7 +9,7 @@ import com.example.telegrambot.enums.GptState;
 import com.example.telegrambot.service.conversation.ConversationHistoryService;
 import com.example.telegrambot.service.event.EventService;
 import com.example.telegrambot.service.user.UserService;
-import com.example.telegrambot.utils.Emojis;
+import com.example.telegrambot.enums.Emojis;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -87,8 +87,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             defaultMsg(response, "Приветствуем вас на нашем диджитальном дне! \n" + Emojis.ROBOT +
                     " Я робот, буду вашим путеводителем, у меня можно узнать: \n" +
                     "\n <b>- Программу мероприятия. </b>" +
-//                    "\n <b>- Что идет сейчас? </b>" +
-//                    "\n <b>- Что будет следующем? </b>" +
                     "\n <b>- Сгенерировать арт у Midjourney. </b>" +
                     "\n <b>- Пообщаться с ChatGPT. </b>" +
                     "\n <b>- Узнать как зарегистрировать chatGPT и Midjourney. </b>\n\n" +
@@ -104,8 +102,10 @@ public class TelegramBot extends TelegramLongPollingBot {
             }
         } else if(requestMessage.getText().equals("/refreshGPT")) {
             userService.setGptState(GptState.ACTIVE, requestMessage.getFrom().getId());
-            defaultMsg(response, Emojis.ROBOT + "ChatGPT был перегружен, продолжайте Ваше общение! Контекст сохранен предыдущими успешными сообщениями!");
-            //TODO: сделать сброс всего контекста и кол-во сообщений
+            defaultMsg(response, Emojis.ROBOT + "ChatGPT был перегружен, контекст удален, продолжайте Ваше общение!");
+            User user1 = userService.findUserByUserId(user.getUserId());
+            conversationHistoryService.resetMaxContextQuestions(user1.getId());
+            conversationHistoryService.setConversationText("", user1.getId());
         } else if(requestMessage.getText().equals("Menu") || requestMessage.getText().equals("menu")
                 || requestMessage.getText().equals("меню") || requestMessage.getText().equals("Меню")) {
             if(update.hasMessage() && update.getMessage().hasText()) {

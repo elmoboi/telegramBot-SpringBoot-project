@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository("userRepository")
-public interface UserRepository extends JpaRepository<User, Integer>, PagingAndSortingRepository<User, Integer> {
+@Repository
+public interface UserRepository extends JpaRepository<User, Integer> {
     @EntityGraph(attributePaths = "conversationHistory")
     List<User> findUserByStatus(BotState botState);
 
@@ -27,8 +27,8 @@ public interface UserRepository extends JpaRepository<User, Integer>, PagingAndS
     @Query("select u.GPTstatus from User u where u.userId = ?1")
     GptState findUserGptStatusById(long id);
 
-    @Modifying
     @Transactional
+    @Modifying
     @Query("update User u set u.status = ?1 where u.userId = ?2")
     void setBotStatusToUserById(BotState botState ,long id);
 

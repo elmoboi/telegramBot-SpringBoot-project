@@ -1,7 +1,6 @@
 package com.example.telegrambot.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.Length;
@@ -10,7 +9,6 @@ import org.hibernate.Length;
 @Entity
 @Table(name = "chat_gpt_conversation", schema = "public")
 @NoArgsConstructor
-@AllArgsConstructor
 public class ConversationHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

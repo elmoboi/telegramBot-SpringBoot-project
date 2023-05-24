@@ -3,7 +3,7 @@ package com.example.telegrambot.bot.handlers;
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.service.user.UserService;
-import com.example.telegrambot.utils.Emojis;
+import com.example.telegrambot.enums.Emojis;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

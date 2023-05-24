@@ -1,28 +1,25 @@
-package com.example.telegrambot.web.controllers;
+package com.example.telegrambot.controllers;
 
 import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.service.user.UserService;
-import com.example.telegrambot.utils.Emojis;
-import lombok.extern.slf4j.Slf4j;
+import com.example.telegrambot.enums.Emojis;
+import lombok.RequiredArgsConstructor;
 import org.asynchttpclient.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @Controller
 @RequestMapping()
+@RequiredArgsConstructor
 public class WebController {
-    //TODO: добавить сортировку на таболицу, чтобы наверху всегда были старые
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -38,7 +35,7 @@ public class WebController {
 
     @GetMapping("/sendArt/{userId}")
     @ResponseBody
-    public String sendArtToUserChat(@PathVariable String userId, @RequestParam(value = "tgToken") String tgToken, @RequestParam("artHref") String artHref) throws IOException, ExecutionException, InterruptedException {
+    public String sendArtToUserChat(@PathVariable String userId, @RequestParam(value = "tgToken") String tgToken, @RequestParam("artHref") String artHref) throws ExecutionException, InterruptedException {
         var asyncHttpClient = new DefaultAsyncHttpClient();
         String url = "https://api.telegram.org/bot" +tgToken+ "/sendPhoto";
 

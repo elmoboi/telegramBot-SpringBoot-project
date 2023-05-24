@@ -5,7 +5,6 @@ import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.GptState;
 import com.example.telegrambot.service.conversation.ConversationHistoryService;
 import com.example.telegrambot.service.user.UserService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;

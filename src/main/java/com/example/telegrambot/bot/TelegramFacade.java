@@ -6,7 +6,7 @@ import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.enums.GptState;
 import com.example.telegrambot.service.event.EventService;
 import com.example.telegrambot.service.user.UserService;
-import com.example.telegrambot.utils.Emojis;
+import com.example.telegrambot.enums.Emojis;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -133,53 +133,6 @@ public class TelegramFacade {
         sendMessage.setParseMode(ParseMode.HTML);
         return sendMessage;
     }
-
-//    private BotApiMethod<?> onEvent(CallbackQuery callbackQuery) {
-//        final long chatId = callbackQuery.getMessage().getChatId();
-//        StringBuilder stringBuilder = new StringBuilder();
-//        String response;
-//        Event nextEvent = eventService.getNextEvents().get(0);
-//        Event nowEvent = eventService.getNowEvent();
-//        String title = nowEvent.getTitle();
-//        String description = nowEvent.getDescription();
-//
-//        if(title.isEmpty()) {
-//            title = Emojis.ZZZ + " Запланированных мероприятий сейчас нет.";
-//            return new SendMessage(String.valueOf(chatId),title);
-//        }
-//        response = stringBuilder.append("<b>Название: </b>")
-//                .append(title)
-//                .append("\n<b>Описание: </b>")
-//                .append(description)
-//                .append("\n<b>Закончится в: </b>")
-//                .append(nextEvent.getTime().getHour())
-//                .append(":")
-//                .append(nextEvent.getTime().format(dtf)).toString();
-//        SendMessage sendMessage = new SendMessage(String.valueOf(chatId), "<b>Сейчас идет: \n\n</b>" + response);
-//        sendMessage.setParseMode(ParseMode.HTML);
-//        return sendMessage;
-//    }
-
-//    private BotApiMethod<?> onNextEvent(CallbackQuery callbackQuery) {
-//        final long chatId = callbackQuery.getMessage().getChatId();
-//        StringBuilder stringBuilder = new StringBuilder();
-//        String response = "";
-//        List<Event> eventList = eventService.getNextEvents();
-//        if(eventList.isEmpty()) {
-//            response = Emojis.ZZZ + " Сессий больше не наблюдается.";
-//            return new SendMessage(String.valueOf(chatId),response);
-//        }
-//        for(Event event : eventList) {
-//            stringBuilder.append("<b>Название: </b>").append(event.getTitle()).append("\n")
-//                    .append("<b>Описание: </b>").append(event.getDescription()).append("\n")
-//                    .append("<b>Время начала: </b>").append(event.getTime().getHour()).append(":").append(event.getTime().format(dtf)).append("\n")
-//                    .append("\n");
-//            response = stringBuilder.toString();
-//        }
-//        SendMessage sendMessage = new SendMessage(String.valueOf(chatId), "<b>Следующее по рассписанию: \n\n</b>" + response);
-//        sendMessage.setParseMode(ParseMode.HTML);
-//        return sendMessage;
-//    }
 
     private BotApiMethod<?> onProgram(CallbackQuery callbackQuery) {
         final long chatId = callbackQuery.getMessage().getChatId();

@@ -1,4 +1,4 @@
-package com.example.telegrambot.utils;
+package com.example.telegrambot.enums;
 
 import com.vdurmont.emoji.EmojiParser;
 import lombok.AllArgsConstructor;

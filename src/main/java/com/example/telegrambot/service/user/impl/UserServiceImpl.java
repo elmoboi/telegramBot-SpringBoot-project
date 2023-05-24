@@ -6,16 +6,17 @@ import com.example.telegrambot.enums.BotState;
 import com.example.telegrambot.enums.GptState;
 import com.example.telegrambot.repository.UserRepository;
 import com.example.telegrambot.service.user.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     static {
         try {
