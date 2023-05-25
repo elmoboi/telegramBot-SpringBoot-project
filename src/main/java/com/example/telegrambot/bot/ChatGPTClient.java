@@ -47,13 +47,13 @@ public class ChatGPTClient {
 
         //saving context
         if(currentContextQuestions != maxContextCount && currentContextQuestions > 0) {
-            promptArray = Json.generateJsonArray(questionsAndAnswersList,userMessage);
+            promptArray = Json.generateGPTJsonArray(questionsAndAnswersList,userMessage);
         } else if(currentContextQuestions == 0) {
-            promptArray = Json.generateJsonArray(questionsAndAnswersList,userMessage);
+            promptArray = Json.generateGPTJsonArray(questionsAndAnswersList,userMessage);
         } else {
             conversationHistoryService.resetMaxContextQuestions(user.getId());
             conversationHistoryService.setConversationText("", user.getId());
-            promptArray = Json.generateJsonArray(questionsAndAnswersList,userMessage);
+            promptArray = Json.generateGPTJsonArray(questionsAndAnswersList,userMessage);
         }
 
         con.setDoOutput(true);
