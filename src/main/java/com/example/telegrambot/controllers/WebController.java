@@ -3,23 +3,23 @@ package com.example.telegrambot.controllers;
 import com.example.telegrambot.entity.User;
 import com.example.telegrambot.enums.AnswerEnum;
 import com.example.telegrambot.enums.BotState;
+import com.example.telegrambot.service.TelegramService;
 import com.example.telegrambot.service.user.UserService;
 import com.example.telegrambot.enums.Emojis;
-import lombok.RequiredArgsConstructor;
-import org.asynchttpclient.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Controller
-@RequestMapping()
-@RequiredArgsConstructor
 public class WebController {
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private TelegramService telegramService;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -35,27 +35,16 @@ public class WebController {
 
     @GetMapping("/sendArt/{userId}")
     @ResponseBody
-    public String sendArtToUserChat(@PathVariable String userId, @RequestParam(value = "tgToken") String tgToken, @RequestParam("artHref") String artHref) throws ExecutionException, InterruptedException {
-        var asyncHttpClient = new DefaultAsyncHttpClient();
-        String url = "https://api.telegram.org/bot" +tgToken+ "/sendPhoto";
-
+    public String sendArtToUserChat(@PathVariable String userId, @RequestParam("artHref") String artHref) {
         String msg = Emojis.ROBOT + " Вот, что удалось сгенерировать ИИ Midjourney по вашему запросу.";
 
-        Request request = new RequestBuilder().setUrl(url)
-                .setHeader("accept", "application/json")
-                .setHeader("User-Agent", "Telegram Bot SDK - (https://github.com/irazasyed/telegram-bot-sdk)")
-                .setHeader("content-type", "application/json")
-                .setBody("{\"photo\":\"" +artHref+ "\",\"caption\":\"" +msg+ "\",\"disable_notification\":false,\"chat_id\":\"" +userId+ "\"}")
-                .build();
+        ResponseEntity<String> response = telegramService.sendPhoto(artHref,msg,userId);
 
-        CompletableFuture<Response> future = asyncHttpClient.executeRequest(request).toCompletableFuture();
-        Response response = future.get();
-        if(response.getStatusText().equals("OK") && userService.getSentStatus(Long.parseLong(userId)).equals(AnswerEnum.NO)) {
+        if(response.getStatusCode().toString().equals("200 OK") && userService.getSentStatus(Long.parseLong(userId)).equals(AnswerEnum.NO)) {
             userService.setSentStatus(AnswerEnum.YES, Long.parseLong(userId));
             userService.setBotState(BotState.VALIDATED_ART_FROM_MIDJOURNEY, Long.parseLong(userId));
         }
 
-        asyncHttpClient.close();
-        return response.getResponseBody();
+        return response.getBody();
     }
 }

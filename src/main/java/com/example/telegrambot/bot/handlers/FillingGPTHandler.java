@@ -17,10 +17,12 @@ import java.util.List;
 public class FillingGPTHandler implements InputMessageGPTHandler {
     private final UserService userService;
     private final ConversationHistoryService conversationHistoryService;
+    private final ChatGPTClient chatGPTClient;
 
-    public FillingGPTHandler(UserService userService, ConversationHistoryService conversationHistoryService) {
+    public FillingGPTHandler(UserService userService, ConversationHistoryService conversationHistoryService, ChatGPTClient chatGPTClient) {
         this.userService = userService;
         this.conversationHistoryService = conversationHistoryService;
+        this.chatGPTClient = chatGPTClient;
     }
 
     @Override
@@ -56,7 +58,7 @@ public class FillingGPTHandler implements InputMessageGPTHandler {
                 questionsAndAnswersList.addAll(Arrays.asList(splitQuestionsAndAnswers).subList(0, curentQuestions));
             }
 
-            String gptResponse = ChatGPTClient.generateResponse(userAnswer, user, questionsAndAnswersList);
+            String gptResponse = chatGPTClient.generateResponse(userAnswer, user, questionsAndAnswersList);
             replyToUser = new SendMessage(String.valueOf(userId),gptResponse);
             gptResponse = gptResponse.replaceAll("[^A-Za-zА-Яа-я0-9-\s]", "");
             String updatedHisoryText = userAnswer + ":::" + gptResponse + " Q&A ";
