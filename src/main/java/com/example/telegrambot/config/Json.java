@@ -18,7 +18,7 @@ public class Json {
         }
     }
 
-    public static JsonArray generateJsonArray(List<String> questionsAndAnswersList, String userMessage) {
+    public static JsonArray generateGPTJsonArray(List<String> questionsAndAnswersList, String userMessage) {
         JsonArray promptArray = new JsonArray();
         if(!questionsAndAnswersList.isEmpty()) {
             for (String qa : questionsAndAnswersList) {
