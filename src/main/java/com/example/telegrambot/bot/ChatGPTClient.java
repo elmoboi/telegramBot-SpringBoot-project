@@ -24,7 +24,6 @@ import java.util.List;
 public class ChatGPTClient {
 
     private static ConversationHistoryService conversationHistoryService;
-    private static final JsonObject assistantObject = new JsonObject();
     @Value("${openai.api.key}")
     private String apiKey;
     @Value("${openai.url}")
@@ -42,6 +41,7 @@ public class ChatGPTClient {
         int currentContextQuestions = conversationHistoryService.getMaxContextQuestions(user.getId());
         JsonArray promptArray;
         HttpURLConnection con = (HttpURLConnection) new URL(gptUrl).openConnection();
+        JsonObject assistantObject = new JsonObject();
 
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
