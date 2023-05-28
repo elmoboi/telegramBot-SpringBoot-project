@@ -4,10 +4,8 @@ package com.example.telegrambot.bot;
 import com.example.telegrambot.config.Json;
 import com.example.telegrambot.entity.User;
 import com.example.telegrambot.service.conversation.ConversationHistoryService;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +22,6 @@ import java.util.List;
 public class ChatGPTClient {
 
     private static ConversationHistoryService conversationHistoryService;
-    private static final JsonObject assistantObject = new JsonObject();
     @Value("${openai.api.key}")
     private String apiKey;
     @Value("${openai.url}")
@@ -42,6 +39,7 @@ public class ChatGPTClient {
         int currentContextQuestions = conversationHistoryService.getMaxContextQuestions(user.getId());
         JsonArray promptArray;
         HttpURLConnection con = (HttpURLConnection) new URL(gptUrl).openConnection();
+        JsonObject assistantObject = new JsonObject();
 
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
@@ -49,13 +47,13 @@ public class ChatGPTClient {
 
         //saving context
         if(currentContextQuestions != maxContextCount && currentContextQuestions > 0) {
-            promptArray = Json.generateJsonArray(questionsAndAnswersList,userMessage);
+            promptArray = Json.generateGPTJsonArray(questionsAndAnswersList,userMessage);
         } else if(currentContextQuestions == 0) {
-            promptArray = Json.generateJsonArray(questionsAndAnswersList,userMessage);
+            promptArray = Json.generateGPTJsonArray(questionsAndAnswersList,userMessage);
         } else {
             conversationHistoryService.resetMaxContextQuestions(user.getId());
             conversationHistoryService.setConversationText("", user.getId());
-            promptArray = Json.generateJsonArray(questionsAndAnswersList,userMessage);
+            promptArray = Json.generateGPTJsonArray(questionsAndAnswersList,userMessage);
         }
 
         con.setDoOutput(true);

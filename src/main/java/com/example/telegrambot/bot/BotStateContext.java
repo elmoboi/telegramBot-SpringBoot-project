@@ -1,6 +1,6 @@
 package com.example.telegrambot.bot;
 
-import com.example.telegrambot.bot.handlers.InputMessageHandler;
+import com.example.telegrambot.bot.handlers.InputMessageMidjourneyHandler;
 import com.example.telegrambot.enums.BotState;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,15 +14,15 @@ import java.util.Map;
 @Component
 @Slf4j
 public class BotStateContext {
-    private Map<BotState, InputMessageHandler> messageHandlers = new HashMap<>();
+    private Map<BotState, InputMessageMidjourneyHandler> messageHandlers = new HashMap<>();
 
-    public BotStateContext(List<InputMessageHandler> messageHandlers) {
+    public BotStateContext(List<InputMessageMidjourneyHandler> messageHandlers) {
         messageHandlers.forEach(handler -> this.messageHandlers.put(handler.getHandlerName(), handler));
     }
 
     public SendMessage processInputMessage(BotState currentState, Message message) {
         try {
-            InputMessageHandler currentMessageHandler = findMessageHandler(currentState);
+            InputMessageMidjourneyHandler currentMessageHandler = findMessageHandler(currentState);
             log.info("messageHandlers currentMessageHandler - " + currentMessageHandler);
             if(currentMessageHandler != null) {
                 return currentMessageHandler.handle(message);
@@ -33,7 +33,7 @@ public class BotStateContext {
         return null;
     }
 
-    private InputMessageHandler findMessageHandler(BotState currentState) {
+    private InputMessageMidjourneyHandler findMessageHandler(BotState currentState) {
         if (isFillingMidjourneyState(currentState)) {
             if (currentState.equals(BotState.WAITING_REQUEST_MIDJOURNEY)) {
                 return messageHandlers.get(BotState.WAITING_REQUEST_MIDJOURNEY);

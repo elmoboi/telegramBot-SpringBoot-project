@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-public class FillingMidjourneyHandler implements InputMessageHandler {
+public class FillingMidjourneyHandler implements InputMessageMidjourneyHandler {
 
     private final UserService userService;
 

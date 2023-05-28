@@ -29,16 +29,14 @@ public class TelegramFacade {
     FillingMidjourneyHandler fillingMidjourneyHandler;
     private final EventService eventService;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("mm");
-    private final ChatGPTClient chatGPTClient;
 
     public TelegramFacade(UserService userService, BotStateContext botStateContext, GptStateContext gptStateContext, FillingMidjourneyHandler fillingMidjourneyHandler,
-                          EventService eventService, ChatGPTClient chatGPTClient) {
+                          EventService eventService) {
         this.userService = userService;
         this.botStateContext = botStateContext;
         this.gptStateContext = gptStateContext;
         this.fillingMidjourneyHandler = fillingMidjourneyHandler;
         this.eventService = eventService;
-        this.chatGPTClient = chatGPTClient;
     }
 
     public BotApiMethod<?> handleUpdate(Update update) throws Exception {
@@ -99,6 +97,11 @@ public class TelegramFacade {
     private BotApiMethod<?> processCallbackQuery(CallbackQuery callbackQuery) {
         log.info("method processCallbackQuery was started");
         final long chatId = callbackQuery.getMessage().getChatId();
+        if(userService.getBotState(chatId) == null) {
+            return new SendMessage(String.valueOf(chatId), Emojis.ROBOT +
+                    "Похоже меня перезагрузили" + Emojis.FEARFUL + "\nЛибо мы с Вами еще не знакомы" + Emojis.PENSIVE +
+                    "\nВ любом случае, активировать меня можно командой" + Emojis.RIGTH_FINGER + "/start и вызвать новое меню");
+        }
 
         if(callbackQuery.getData().equals("midjourney")) {
             return onMidjourney(callbackQuery);
@@ -114,10 +117,10 @@ public class TelegramFacade {
     }
     private BotApiMethod<?> onMidjourney(CallbackQuery callbackQuery) {
         final long chatId = callbackQuery.getMessage().getChatId();
-        final int userId = Math.toIntExact(callbackQuery.getFrom().getId());
+        final long userId = callbackQuery.getFrom().getId();
         if(userService.getBotState(userId).equals(BotState.WAITING_ART)) {
             return new SendMessage(String.valueOf(chatId), Emojis.LOCK + " К сожалению, мульти-запрос недоступен, " +
-                    "дождитесь пока Midjourney сгенерирует предыдущий запрос перед тем как запришвать новый.");
+                    "дождитесь пока Midjourney сгенерирует предыдущий запрос перед тем как запрашивать новый.");
         }
         String msg1 = """
                     <b> Введите запрос на английском для обработки Midjourney</b>
